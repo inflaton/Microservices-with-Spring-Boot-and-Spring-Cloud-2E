@@ -2,10 +2,10 @@
 #
 # Sample usage:
 #
-#   HOST=localhost PORT=7000 ./test-em-all.bash
+#   HOST=localhost PORT=8000 ./test-em-all.bash
 #
 : ${HOST=localhost}
-: ${PORT=7000}
+: ${PORT=8000}
 : ${PROD_ID_REVS_RECS=1}
 : ${PROD_ID_NOT_FOUND=13}
 : ${PROD_ID_NO_RECS=113}
