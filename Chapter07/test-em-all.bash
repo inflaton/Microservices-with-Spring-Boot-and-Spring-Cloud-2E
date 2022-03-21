@@ -6,7 +6,7 @@
 #
 : ${HOST=localhost}
 : ${PORT=8080}
-: ${PROD_ID_REVS_RECS=1}
+: ${PROD_ID_REVS_RECS=10}
 : ${PROD_ID_NOT_FOUND=13}
 : ${PROD_ID_NO_RECS=113}
 : ${PROD_ID_NO_REVS=213}
