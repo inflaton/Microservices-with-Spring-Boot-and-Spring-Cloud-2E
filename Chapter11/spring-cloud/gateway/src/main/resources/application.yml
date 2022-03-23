@@ -116,3 +116,11 @@ spring.config.activate.on-profile: docker
 app:
   eureka-server: eureka
   auth-server: auth-server
+
+---
+spring.config.activate.on-profile: docker_auth0
+
+app:
+  eureka-server: eureka
+
+spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-c8-4oqyp.us.auth0.com/

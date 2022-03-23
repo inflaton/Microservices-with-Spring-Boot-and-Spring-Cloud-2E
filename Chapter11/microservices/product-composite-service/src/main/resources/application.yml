@@ -147,6 +147,20 @@ spring.rabbitmq.host: rabbitmq
 spring.cloud.stream.kafka.binder.brokers: kafka
 
 ---
+spring.config.activate.on-profile: docker_auth0
+
+server.port: 8080
+
+app:
+  eureka-server: eureka
+
+spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-c8-4oqyp.us.auth0.com/
+
+spring.rabbitmq.host: rabbitmq
+
+spring.cloud.stream.kafka.binder.brokers: kafka
+
+---
 spring.config.activate.on-profile: streaming_partitioned
 
 spring.cloud.stream.bindings.products-out-0.producer:
