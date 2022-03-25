@@ -76,7 +76,7 @@ public class AuthorizationServerConfig {
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
             .redirectUri("https://my.redirect.uri")
-            .redirectUri("https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html")
+            .redirectUri("https://localhost:8443/openapi/webjars/swagger-ui/oauth2-redirect.html")
             .scope(OidcScopes.OPENID)
             .scope("product:read")
             .scope("product:write")
@@ -122,4 +122,3 @@ public class AuthorizationServerConfig {
     return ProviderSettings.builder().issuer("http://auth-server:9999").build();
   }
 }
-

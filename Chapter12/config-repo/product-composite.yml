@@ -6,10 +6,10 @@ springdoc:
   cache.disabled: true
 
   swagger-ui:
-    oauth2-redirect-url: https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html
+    oauth2-redirect-url: /swagger-ui/oauth2-redirect.html
     oauth:
       clientId: writer
-      clientSecret: '{cipher}4ec25f436feb83f24d23a89f70b5bc374d4afac0b4693bd9fe527183d1f83893'
+      clientSecret: '{cipher}95f32aa0e418fbd44e1f3c2ae2e4acd030bc28f1b7a44ef05331587c312b70ae'
       useBasicAuthenticationWithAccessCodeGrant: true
   oAuthFlow:
     authorizationUrl: https://localhost:8443/oauth2/authorize
