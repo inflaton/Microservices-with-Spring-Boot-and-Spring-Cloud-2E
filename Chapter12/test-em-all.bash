@@ -184,7 +184,7 @@ fi
 
 waitForService curl -k https://$HOST:$PORT/actuator/health
 
-ACCESS_TOKEN=$(curl -k https://writer:secret@$HOST:$PORT/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+ACCESS_TOKEN=$(curl -k https://writer:writer-secret@$HOST:$PORT/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
 echo ACCESS_TOKEN=$ACCESS_TOKEN
 AUTH="-H \"Authorization: Bearer $ACCESS_TOKEN\""
 

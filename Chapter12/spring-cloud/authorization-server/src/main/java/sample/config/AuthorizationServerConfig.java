@@ -1,4 +1,4 @@
-//CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
 /*
  * Copyright 2020-2021 the original author or authors.
  *
@@ -20,13 +20,15 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import java.time.Duration;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -34,8 +36,15 @@ import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.config.ConfigurationSettingNames;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
+import org.springframework.security.web.SecurityFilterChain;
 import sample.jose.Jwks;
+
+import java.time.Duration;
+import java.util.UUID;
 
 /**
  * @author Joe Grandja
@@ -47,44 +56,59 @@ public class AuthorizationServerConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorizationServerConfig.class);
 
-  // @formatter:off
+  @Bean
+  @Order(Ordered.HIGHEST_PRECEDENCE)
+  public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+    return http.formLogin(Customizer.withDefaults()).build();
+  }
+
   @Bean
   public RegisteredClientRepository registeredClientRepository() {
 
     LOG.info("register OAUth client allowing all grant flows...");
-    RegisteredClient writerClient = RegisteredClient.withId(UUID.randomUUID().toString())
-      .clientId("writer")
-      .clientSecret("secret")
-      .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
-      .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-      .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-      .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-      .redirectUri("https://my.redirect.uri")
-      .redirectUri("https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html")
-      .scope(OidcScopes.OPENID)
-      .scope("product:read")
-      .scope("product:write")
-      .clientSettings(clientSettings -> clientSettings.requireUserConsent(true))
-      .tokenSettings(ts -> ts.accessTokenTimeToLive(Duration.ofHours(1)))
-      .build();
+    RegisteredClient writerClient =
+        RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("writer")
+            .clientSecret("{noop}writer-secret")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+            .redirectUri("https://my.redirect.uri")
+            .redirectUri("https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html")
+            .scope(OidcScopes.OPENID)
+            .scope("product:read")
+            .scope("product:write")
+            .clientSettings(
+                ClientSettings.builder()
+                    .setting(ConfigurationSettingNames.Client.REQUIRE_AUTHORIZATION_CONSENT, true)
+                    .build())
+            .tokenSettings(
+                TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+            .build();
 
-    RegisteredClient readerClient = RegisteredClient.withId(UUID.randomUUID().toString())
-      .clientId("reader")
-      .clientSecret("secret")
-      .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
-      .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-      .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-      .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-      .redirectUri("https://my.redirect.uri")
-      .redirectUri("https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html")
-      .scope(OidcScopes.OPENID)
-      .scope("product:read")
-      .clientSettings(clientSettings -> clientSettings.requireUserConsent(true))
-      .tokenSettings(ts -> ts.accessTokenTimeToLive(Duration.ofHours(1)))
-      .build();
+    RegisteredClient readerClient =
+        RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("reader")
+            .clientSecret("{noop}secret")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+            .redirectUri("https://my.redirect.uri")
+            .redirectUri("https://localhost:8443/webjars/swagger-ui/oauth2-redirect.html")
+            .scope(OidcScopes.OPENID)
+            .scope("product:read")
+            .clientSettings(
+                ClientSettings.builder()
+                    .setting(ConfigurationSettingNames.Client.REQUIRE_AUTHORIZATION_CONSENT, true)
+                    .build())
+            .tokenSettings(
+                TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+            .build();
     return new InMemoryRegisteredClientRepository(writerClient, readerClient);
   }
-  // @formatter:on
 
   @Bean
   public JWKSource<SecurityContext> jwkSource() {
@@ -95,7 +119,7 @@ public class AuthorizationServerConfig {
 
   @Bean
   public ProviderSettings providerSettings() {
-    return new ProviderSettings().issuer("http://auth-server:9999");
+    return ProviderSettings.builder().issuer("http://auth-server:9999").build();
   }
 }
-//CHECKSTYLE:ON
+
